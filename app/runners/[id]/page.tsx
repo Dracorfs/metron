@@ -6,13 +6,6 @@ import { getLeagueTier, getLeagueTierColor } from '@/domain/rating';
 
 export type DistanceType = '5k' | '10k' | 'half_marathon' | 'marathon';
 
-const DISTANCE_LABELS: Record<DistanceType, string> = {
-  '5k': '5K',
-  '10k': '10K',
-  'half_marathon': 'Half Marathon',
-  'marathon': 'Marathon',
-};
-
 export default function RunnerDetailPage({ params }: { params: { id: string } }) {
   const [runner, setRunner] = useState<any>(null);
   const [selectedDistance, setSelectedDistance] = useState<number | null>(null);

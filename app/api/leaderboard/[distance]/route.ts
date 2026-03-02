@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-export async function GET(request: NextRequest, { params }: { params: { distance: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ distance: string }> }) {
   try {
-    const distanceKm = parseFloat(params.distance);
+    const { distance } = await params;
+    const distanceKm = parseFloat(distance);
     const limit = parseInt(request.nextUrl.searchParams.get('limit') || '100');
 
     const leaderboard = await prisma.rating.findMany({

@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const distance = request.nextUrl.searchParams.get('distance');
     const limit = parseInt(request.nextUrl.searchParams.get('limit') || '20');
 
@@ -13,7 +14,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       );
     }
 
-    const runnerId = parseInt(params.id);
+    const runnerId = parseInt(id);
 
     const history = await prisma.ratingHistory.findMany({
       where: {
