@@ -1,0 +1,105 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Runner {
+  id        Int       @id @default(autoincrement())
+  fullName  String
+  sex       String?   // M, F, or null
+  birthYear Int?
+  createdAt DateTime  @default(now())
+
+  results        Result[]
+  ratings        Rating[]
+  ratingHistories RatingHistory[]
+
+  @@map("runners")
+}
+
+model Race {
+  id                  Int       @id @default(autoincrement())
+  name                String
+  date                DateTime
+  location            String?
+  distanceKm          Float
+  totalParticipants   Int
+  raceStrengthIndex   Float?    // Computed after loading ratings
+  createdAt           DateTime  @default(now())
+
+  results            Result[]
+  ratingHistories    RatingHistory[]
+
+  @@map("races")
+}
+
+model Result {
+  id                Int       @id @default(autoincrement())
+  runnerId          Int
+  raceId            Int
+  netTimeSeconds    Float
+  officialTimeSeconds Float?
+  positionGeneral   Int
+  positionCategory  Int?
+  positionSex       Int?
+  category          String?
+  ageAtRace         Int?
+  createdAt         DateTime  @default(now())
+
+  runner            Runner    @relation(fields: [runnerId], references: [id], onDelete: Cascade)
+  race              Race      @relation(fields: [raceId], references: [id], onDelete: Cascade)
+
+  @@unique([runnerId, raceId])
+  @@map("results")
+}
+
+model Rating {
+  id                Int       @id @default(autoincrement())
+  runnerId          Int
+  distanceKm        Float
+  ratingValue       Float     @default(1000)
+  ratingDeviation   Float     @default(350)
+  racesCount        Int       @default(0)
+  provisional       Boolean   @default(true) // true if races_count < 5
+  updatedAt         DateTime  @updatedAt
+
+  runner            Runner    @relation(fields: [runnerId], references: [id], onDelete: Cascade)
+
+  @@unique([runnerId, distanceKm])
+  @@map("ratings")
+}
+
+model RatingHistory {
+  id                Int       @id @default(autoincrement())
+  runnerId          Int
+  raceId            Int
+  distanceKm        Float
+  ratingBefore      Float
+  ratingAfter       Float
+  delta             Float
+  expectedPercentile Float
+  actualPercentile  Float
+  kFactor           Float
+  createdAt         DateTime  @default(now())
+
+  runner            Runner    @relation(fields: [runnerId], references: [id], onDelete: Cascade)
+  race              Race      @relation(fields: [raceId], references: [id], onDelete: Cascade)
+
+  @@map("rating_histories")
+}
+
+model RatingModelVersion {
+  id                Int       @id @default(autoincrement())
+  version           String    @unique
+  description       String?
+  createdAt         DateTime  @default(now())
+
+  @@map("rating_model_versions")
+}
