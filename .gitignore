@@ -3,3 +3,8 @@ node_modules
 .env
 .env.local
 dist
+
+# Locks
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
