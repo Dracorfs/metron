@@ -9,9 +9,7 @@ import {
   isProvisional,
   calculateRaceStrengthIndex,
   getLeagueTier,
-  INITIAL_RATING,
   GLOBAL_AVERAGE_RATING,
-  ELO_SCALING_FACTOR,
 } from './rating';
 
 describe('Rating Calculations', () => {
